@@ -28,7 +28,7 @@ main td{
 }
 
 main table tr:nth-child(odd){
-    background: white;
+    background: rgb(255, 255, 255);
 }
 
 main table img{

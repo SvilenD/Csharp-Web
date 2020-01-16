@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Beer Store - Order</title>
+    <link rel="stylesheet" href="./styles/template-style.css">
+    <link rel="stylesheet" href="./styles/order-style.css">
+</head>
+<body>
+    <nav>
+            <a href="index.html"class="logo"><img src="./images/logo.png" alt="Store logo"></a>
+            <a href="index.html" class="nav-bar-buttons" class="nav-hover">Home</a>
+            <a href="all-beers.html" class="nav-bar-buttons">All Beers</a>
+            <a href="order.html" class="nav-bar-buttons">Order</a>
+            <a href="register.html" class="nav-bar-buttons">Register</a>
+            <a href="login.html" class="nav-bar-buttons">Log In</a>
+    </nav>
+    <main>
+        <h1>This is <small>Beer</small> Store Order Page</h1>
+        </hr>
+        <form action="" method="POST" name="orderBeer">
+            <label for="brand" class="center">Brand</label>
+            <select name="brand" form="orderBeer" class="center">
+                <option value="default" disabled selected>Select a Brand</option>
+                <option>Corona Extra 330ml</option>
+                <option>Stella Artois 500ml</option>
+                <option>Carlsberg 500ml</option>
+                <option>Heineken 500ml</option>
+            </select>
+            <label for="quantity" class="center">Quantity</label>
+            <input type="number" name="quantity" form="orderBeer" min="1" max="24" placeholder="Enter amount of beers (1-24)" class="center">
+            <label for="orderType" class="center">Order Type</label>
+                <input type="radio" name="orderType" value="delivery" id="radio-select" checked="checked">
+                <label class="radio-button">Delivery</label> 
+                <input type="radio" name="orderType" value="local">
+                <label class="radio-button">Store Pick up</label> 
+            <label for="address" class="center">Delivery address</label>
+            <input type="text" class="center" placeholder="Leave empty for Store Pick up">
+            <button type="submit" value="order">Order</button>
+        </form>
+    </main>
+
+    <footer>
+         <p>&copy; 2020 &ndash; SoftUni Beers</p>   
+    </footer>
+</body>
+</html>
