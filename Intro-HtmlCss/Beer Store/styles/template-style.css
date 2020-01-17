@@ -13,7 +13,7 @@ main>h1>small{
 }
 
 footer{
-    position: absolute;;
+    position: relative;
     bottom:3%;
     height:5%;
     font-style: italic;
@@ -54,4 +54,11 @@ nav, .nav-bar-buttons, .logo, img{
 }
 .logo:hover, img:hover {
     background-color:#ddd;
+}
+
+#drink-ignore{
+    display: block;
+    max-height: 400px;
+    padding: 5% auto;
+    margin: 0 auto;
 }
