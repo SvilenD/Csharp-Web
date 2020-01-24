@@ -26,7 +26,7 @@
             {
                 // TCP / UDP
                 TcpClient client = await tcpListener.AcceptTcpClientAsync();
-                var clientProcessor = new ClientProcessor(client);
+                new ClientProcessor(client);
             }
         }
 
