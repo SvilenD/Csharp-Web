@@ -12,7 +12,7 @@
         private const string SessionIdPattern = "sid=[^\n]*\n";
         private const string SessionMatch = @"^(?<sid>(.+))( => )(?<count>(\d)+)$";
         private const string FileLocation = "../../../SessionStore.txt";
-        private static Dictionary<string, int> SessionData = GetData();
+        private static readonly Dictionary<string, int> SessionData = GetData();
 
         public static KeyValuePair<string, int> GetSessionInfo(string requestInfo)
         {
