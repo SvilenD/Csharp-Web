@@ -10,14 +10,9 @@
 
     public class StartUp
     {
-        private const int Port = 12345;
-        private const string ResultFileLocation = "../../../result.html";
-        private const string RequesterStart = "--------------------START OF HTTP REQUESTER JOB!--------------------";
-        private const string RequesterEnd = "---------------------END OF HTTP REQUESTER JOB!---------------------";
-
         public static async Task Main()
         {
-            TcpListener tcpListener = new TcpListener(IPAddress.Loopback, Port);
+            TcpListener tcpListener = new TcpListener(IPAddress.Loopback, Constants.Port);
             tcpListener.Start();
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -38,19 +33,20 @@
 
         public async static Task HttpRequesterAsync()
         {
-            Console.WriteLine(RequesterStart);
+            Console.WriteLine(Constants.RequesterStart);
 
             HttpClient httpClient = new HttpClient();
             HttpResponseMessage response = await httpClient.GetAsync("https://softuni.bg");
+
             string result = await response.Content.ReadAsStringAsync();
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            File.WriteAllTextAsync(ResultFileLocation, result);
+            File.WriteAllTextAsync(Constants.ResultFileLocation, result);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
             Thread.Sleep(10000);
 
             Console.WriteLine(response);
-            Console.WriteLine(RequesterEnd);
+            Console.WriteLine(Constants.RequesterEnd);
         }
     }
 }

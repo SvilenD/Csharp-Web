@@ -30,13 +30,13 @@
 
                 KeyValuePair<string,int> sessionInfo = SessionStorage.GetSessionInfo(requestInfo.ToString());
 
-                string responseBody = await File.ReadAllTextAsync("../../../ResponsePage.html");
-                responseBody += $"<h3> Session Id: {sessionInfo.Key} => Connections Count = {sessionInfo.Value}</h3>";
+                string responseBody = await File.ReadAllTextAsync(Constants.ResponsePage);
+                responseBody += $"<h3>Session Id: {sessionInfo.Key} => Connections Count = {sessionInfo.Value}</h3>";
 
                 string response = "HTTP/1.1 200 OK" + NewLine + //"HTTP/1.1 301 Moved" + NewLine +
                                   "Content-Type: text/html" + NewLine +
                                   $"Set-Cookie: sid={sessionInfo.Key}; Path=/; " +
-                                  $"Max-Age=600; HttpOnly; SameSite=Strict" + NewLine + //Secure - for https
+                                  $"Max-Age={Constants.MaxAge}; HttpOnly; SameSite=Strict" + NewLine + //Secure - for https
                                   //"Location: https://google.com" + NewLine +
                                   //"Content-Disposition: attachment; filename=response.html" + NewLine +
                                   "Server: MyCustomServer/1.0" + NewLine +
