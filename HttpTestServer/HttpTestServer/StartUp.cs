@@ -10,7 +10,7 @@
 
     public class StartUp
     {
-        const int Port = 12345;
+        private const int Port = 12345;
 
         public static async Task Main()
         {
@@ -18,7 +18,7 @@
             tcpListener.Start();
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Task.Run(() => HttpRequesterAsync());
+            //Task.Run(() => HttpRequesterAsync());
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
             // WebUtility.UrlDecode
@@ -26,7 +26,10 @@
             {
                 // TCP / UDP
                 TcpClient client = await tcpListener.AcceptTcpClientAsync();
-                new ClientProcessor(client);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                Task.Run(() => ClientProcessor.ProcessClientAsync(client));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
         }
 
@@ -40,7 +43,7 @@
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             File.WriteAllTextAsync("../../../result.html", result);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            
+
             Thread.Sleep(10000);
 
             Console.WriteLine(response);

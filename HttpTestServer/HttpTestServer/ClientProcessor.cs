@@ -4,19 +4,14 @@
     using System.Text;
     using System.Net.Sockets;
     using System.Threading.Tasks;
+    using System.IO;
+    using System.Collections.Generic;
 
-    public class ClientProcessor
+    public static class ClientProcessor
     {
         private const string NewLine = "\r\n";
-        private readonly TcpClient client;
 
-        public ClientProcessor(TcpClient client)
-        {
-            this.client = client;
-            Task.Run(() => this.ProcessClientAsync());
-        }
-
-        private async Task ProcessClientAsync()
+        public static async Task ProcessClientAsync(TcpClient client)
         {
             using (NetworkStream networkStream = client.GetStream())
             {
@@ -33,24 +28,25 @@
                 Console.WriteLine(new string('=', 70));
                 Console.WriteLine(requestInfo);
 
-                string responseBody = @"<form action='/Account/Login' method='post'>
-                                            <label for='username'> Username: </label>
-                                            <input type=text name='username' />
-                                            <label for='password'>Password: </label>
-                                            <input type=password name='pasword' />
-                                            <input type=date name='date' />
-                                            <input type=submit value='Login' />
-                                            </form>";
+                KeyValuePair<string,int> sessionInfo = SessionStorage.GetSessionInfo(requestInfo.ToString());
+
+                string responseBody = await File.ReadAllTextAsync("../../../ResponsePage.html");
+                responseBody += $"<h3> Session Id: {sessionInfo.Key} => Connections Count = {sessionInfo.Value}</h3>";
+
                 string response = "HTTP/1.1 200 OK" + NewLine + //"HTTP/1.1 301 Moved" + NewLine +
                                   "Content-Type: text/html" + NewLine +
+                                  $"Set-Cookie: sid={sessionInfo.Key}; Path=/; " +
+                                  $"Max-Age=600; HttpOnly; SameSite=Strict" + NewLine + //Secure - for https
                                   //"Location: https://google.com" + NewLine +
-                                  //"Content-Disposition: attachment; filename=index.html" + NewLine +
+                                  //"Content-Disposition: attachment; filename=response.html" + NewLine +
                                   "Server: MyCustomServer/1.0" + NewLine +
-                                  $"Content-Length: {responseBody.Length}" + NewLine + NewLine +
-                                  responseBody;
+                                  $"Content-Length: {responseBody.Length}" + NewLine + NewLine
+                                  + responseBody + NewLine;
+
                 byte[] responseBytes = Encoding.UTF8.GetBytes(response);
                 await networkStream.WriteAsync(responseBytes, 0, responseBytes.Length);
             }
         }
+
     }
 }
