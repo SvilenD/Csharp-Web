@@ -1,53 +1,62 @@
 ﻿namespace HttpTestServer
 {
-    using HttpTestServer.Data;
-    using HttpTestServer.Data.Models;
-
     using System;
-    using System.Linq;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
     using System.Text.RegularExpressions;
-    //using Microsoft.EntityFrameworkCore;
+    using System.Threading.Tasks;
 
     public static class SessionStorage
     {
+        private const string SessionIdPattern = "sid=[^\n]*\n";
+        private const string SessionMatch = @"^(?<sid>(.+))( => )(?<count>(\d)+)$";
+        private const string FileLocation = "../../../SessionStore.txt";
+        private static readonly Dictionary<string, int> SessionData = GetData();
+
         public static KeyValuePair<string, int> GetSessionInfo(string requestInfo)
         {
-            using HttpTestServerContext db = new HttpTestServerContext();
-            //db.Database.Migrate();
-
-            string sid = Regex.Match(requestInfo.ToString(), 
-                Constants.SessionIdPattern).Value?.Replace("sid=", string.Empty).Trim();
-
-            var session = db.Sessions
-                .Where(s => s.IsExpired == false)
-                .FirstOrDefault(s => s.Id == sid);
-
-            if (session == null)
+            string sid = Regex.Match(requestInfo.ToString(), SessionIdPattern).Value?.Replace("sid=", string.Empty).Trim();
+            int count = 1;
+            if (SessionData.ContainsKey(sid))
             {
-                sid = Guid.NewGuid().ToString();
-                session = new Session()
+                count = ++SessionData[sid];
+
+                File.Delete(FileLocation);
+                StringBuilder stringInfo = new StringBuilder();
+
+                Parallel.ForEach(SessionData, (line) =>
                 {
-                    Id = sid,
-                    Count = 0
-                };
-                db.Sessions.Add(session);
+                    stringInfo.AppendLine($"{line.Key} - {line.Value}");
+                });
+
+                File.WriteAllTextAsync(FileLocation, stringInfo.ToString());
+            }
+            else
+            {
+                string newSid = Guid.NewGuid().ToString();
+                SessionData[newSid] = count;
+                sid = newSid;
+                File.AppendAllText(FileLocation, $"{Environment.NewLine}{sid} => {count}");
             }
 
-            session.Count++;
-            session.LastLogin = DateTime.UtcNow;
-
-            SetExpired(db);
-            db.SaveChangesAsync();
-
-            return new KeyValuePair<string, int>(session.Id, session.Count);
+            return new KeyValuePair<string, int>(sid, count);
         }
 
-        private static void SetExpired(HttpTestServerContext db)
+        private static Dictionary<string, int> GetData()
         {
-            db.Sessions
-                .Where(s => s.LastLogin > DateTime.UtcNow.AddSeconds(Constants.MaxAge))
-                .ToList().ForEach(s => s.IsExpired = true);
+            var data = File.ReadAllLines(FileLocation);
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+            foreach (var line in data)
+            {
+                if (Regex.IsMatch(line, SessionMatch))
+                {
+                    string sid = Regex.Match(line, SessionMatch).Groups["sid"].Value;
+                    int count = int.Parse(Regex.Match(line, SessionMatch).Groups["count"].Value);
+                    dict.Add(sid, count);
+                }
+            }
+            return dict;
         }
     }
 }
