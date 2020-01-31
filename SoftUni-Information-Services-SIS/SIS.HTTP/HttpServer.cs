@@ -108,10 +108,11 @@ namespace SIS.HTTP
             }
             catch (Exception ex)
             {
-                var errorResponse = new HttpResponse(
-                    HttpResponseCode.InternalServerError,
-                    Encoding.UTF8.GetBytes(ex.ToString()));
+                //TODO log error to file, return error page
+                var errorResponse = new HttpResponse(HttpResponseCode.InternalServerError, Encoding.UTF8.GetBytes(ex.ToString()));
+                
                 errorResponse.Headers.Add(new Header("Content-Type", "text/plain"));
+                
                 byte[] responseBytes = Encoding.UTF8.GetBytes(errorResponse.ToString());
                 await networkStream.WriteAsync(responseBytes, 0, responseBytes.Length);
                 await networkStream.WriteAsync(errorResponse.Body, 0, errorResponse.Body.Length);

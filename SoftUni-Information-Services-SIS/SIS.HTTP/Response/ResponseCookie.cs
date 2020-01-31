@@ -32,6 +32,7 @@ namespace SIS.HTTP.Response
         {
             StringBuilder cookieBuilder = new StringBuilder();
             cookieBuilder.Append($"{this.Name}={this.Value}");
+
             if (this.MaxAge.HasValue)
             {
                 cookieBuilder.Append($"; Max-Age=" + this.MaxAge.Value.ToString());

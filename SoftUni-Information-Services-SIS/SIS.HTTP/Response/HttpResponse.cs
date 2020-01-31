@@ -53,7 +53,7 @@ namespace SIS.HTTP.Response
 
             foreach (var cookie in this.Cookies)
             {
-                responseAsString.Append("Set-Cookie: " + cookie.ToString() + HttpConstants.NewLine); ;
+                responseAsString.Append("Set-Cookie: " + cookie.ToString() + HttpConstants.NewLine);
             }
 
             responseAsString.Append(HttpConstants.NewLine);
