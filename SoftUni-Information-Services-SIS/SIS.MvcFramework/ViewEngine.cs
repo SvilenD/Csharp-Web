@@ -11,42 +11,63 @@ namespace SIS.MvcFramework
 {
     public class ViewEngine : IViewEngine
     {
-        public string GetHtml(string templateHtml, object model)
+        public string GetHtml(string templateHtml, object model, string user)
         {
             var methodCode = PrepareCSharpCode(templateHtml);
-            var typeName = model?.GetType().FullName ?? "object";
-            if (model?.GetType().IsGenericType == true) // null/true/false bool?
+
+            var modelType = model?.GetType() ?? typeof(object); //if model is null set type to object
+            var typeName = modelType.FullName;
+
+            if (modelType.IsGenericType)
             {
-                typeName = model.GetType().Name.Replace("`1", string.Empty) + "<"
-                    + model.GetType().GenericTypeArguments.First().Name + ">";
+                typeName = GetGenericTypeFullName(modelType);
             }
 
             var code = @$"using System;
-                            using System.Text;
-                            using System.Linq;
-                            using System.Collections.Generic;
-                            using SIS.MvcFramework;
-                            namespace AppViewNamespace
-                                {{
-                                      public class AppViewCode : IView
-                                        {{
-                                            public string GetHtml(object model)
-                                            {{
-                                                var Model = model as {typeName};
-                                                object User = null;
-                                                var html = new StringBuilder();
+using System.Text;
+using System.Linq;
+using System.Collections.Generic;
+using SIS.MvcFramework;
+namespace AppViewNamespace
+{{
+    public class AppViewCode : IView
+    {{
+        public string GetHtml(object model, string user)
+        {{
+            var Model = model as {typeName};
+            var User = user;
+            var html = new StringBuilder();
 
-                                                {methodCode}
+{methodCode}
 
-                                                return html.ToString();
-                                            }}
-                                        }} 
-                                }}";
-            
+            return html.ToString();
+        }}
+    }}
+}}";
+
             IView view = GetInstanceFromCode(code, model);
-            string html = view.GetHtml(model);
-
+            string html = view.GetHtml(model, user);
             return html;
+        }
+
+        private string GetGenericTypeFullName(Type modelType)
+        {
+            var argumentCountBeginning = modelType.Name.LastIndexOf('`');
+            var genericModelTypeName = modelType.Name.Substring(0, argumentCountBeginning);
+            var genericTypeFullName = $"{modelType.Namespace}.{genericModelTypeName}";
+            var genericTypeArguments = modelType.GenericTypeArguments.Select(GetGenericTypeArgumentFullName);
+            var modelTypeName = $"{genericTypeFullName}<{string.Join(", ", genericTypeArguments)}>";
+            return modelTypeName;
+        }
+
+        private string GetGenericTypeArgumentFullName(Type genericTypeArgument)
+        {
+            if (genericTypeArgument.IsGenericType)
+            {
+                return GetGenericTypeFullName(genericTypeArgument);
+            }
+
+            return genericTypeArgument.FullName;
         }
 
         private IView GetInstanceFromCode(string code, object model)
@@ -83,10 +104,8 @@ namespace SIS.MvcFramework
             memoryStream.Seek(0, SeekOrigin.Begin);
             var assemblyByteArray = memoryStream.ToArray();
             var assembly = Assembly.Load(assemblyByteArray);
-
             var type = assembly.GetType("AppViewNamespace.AppViewCode");
             var instance = Activator.CreateInstance(type) as IView;
-
             return instance;
         }
 
@@ -97,7 +116,6 @@ namespace SIS.MvcFramework
             StringBuilder cSharpCode = new StringBuilder();
             StringReader reader = new StringReader(templateHtml);
             string line;
-
             while ((line = reader.ReadLine()) != null)
             {
                 if (line.TrimStart().StartsWith("{")
@@ -114,17 +132,14 @@ namespace SIS.MvcFramework
                 else
                 {
                     var currentCSharpLine = new StringBuilder("html.AppendLine(@\"");
-
                     while (line.Contains("@"))
                     {
                         var atSignLocation = line.IndexOf("@");
                         var before = line.Substring(0, atSignLocation);
                         currentCSharpLine.Append(before.Replace("\"", "\"\"") + "\" + ");
-
                         var cSharpAndEndOfLine = line.Substring(atSignLocation + 1);
                         var cSharpExpression = cSharpExpressionRegex.Match(cSharpAndEndOfLine);
                         currentCSharpLine.Append(cSharpExpression.Value + " + @\"");
-
                         var after = cSharpAndEndOfLine.Substring(cSharpExpression.Length);
                         line = after;
                     }

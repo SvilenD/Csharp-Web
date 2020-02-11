@@ -2,7 +2,7 @@
 
 namespace SulsApp.Controllers
 {
-    class ProblemsController  : Controller
+    public class ProblemsController  : Controller
     {
     }
 }

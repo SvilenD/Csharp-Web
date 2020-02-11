@@ -1,14 +1,23 @@
 ﻿using SIS.HTTP;
 using SIS.HTTP.Response;
 using SIS.MvcFramework;
+using SIS.MvcFramework.Attributes;
+using SulsApp.ViewModels;
 
 namespace SulsApp.Controllers
 {
-    class HomeController : Controller
+    public class HomeController : Controller
     {
-        public HttpResponse Index(HttpRequest request)
+        [HttpGet("/")]
+        public HttpResponse Index()
         {
-            return this.View(); //return View("Index");
+            var model = new IndexViewModel
+            {
+                Message = "Welcome to SULS Platform",
+                Year = 2020
+            };
+
+            return this.View(model); //return View("Index");
         }
     }
 }

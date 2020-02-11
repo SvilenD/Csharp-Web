@@ -23,7 +23,7 @@ namespace SIS.MvcFramework.Tests
             var expectedResultContent = File.ReadAllText($"ViewTests/{testName}.Expected.html");
 
             IViewEngine viewEngine = new ViewEngine();
-            var actualResult = viewEngine.GetHtml(viewContent, viewModel);
+            var actualResult = viewEngine.GetHtml(viewContent, viewModel, "user");
 
             Assert.Equal(expectedResultContent, actualResult);
         }
@@ -46,7 +46,7 @@ namespace SIS.MvcFramework.Tests
 ";
 
             IViewEngine viewEngine = new ViewEngine();
-            var actualResult = viewEngine.GetHtml(viewContent, viewModel);
+            var actualResult = viewEngine.GetHtml(viewContent, viewModel, "user");
 
             Assert.Equal(expectedResultContent, actualResult);
         }

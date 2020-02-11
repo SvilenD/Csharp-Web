@@ -81,7 +81,8 @@ namespace SIS.HTTP
                 Console.WriteLine($"{request.Method} {request.Path}");
 
                 var route = this.routeTable.FirstOrDefault(
-                    x => x.HttpMethod == request.Method && x.Path == request.Path);
+                    x => x.HttpMethod == request.Method && string.Compare(x.Path, request.Path, true) == 0);
+               
                 HttpResponse response;
 
                 if (route == null)
@@ -99,7 +100,7 @@ namespace SIS.HTTP
                 {
                     response.Cookies.Add(
                         new ResponseCookie(HttpConstants.SessionIdCookieName, newSessionId)
-                            { HttpOnly = true, MaxAge = 30*3600, });
+                        { HttpOnly = true, MaxAge = 30 * 3600, });
                 }
 
                 byte[] responseBytes = Encoding.UTF8.GetBytes(response.ToString());
@@ -110,9 +111,9 @@ namespace SIS.HTTP
             {
                 //TODO log error to file, return error page
                 var errorResponse = new HttpResponse(HttpResponseCode.InternalServerError, Encoding.UTF8.GetBytes(ex.ToString()));
-                
+
                 errorResponse.Headers.Add(new Header("Content-Type", "text/plain"));
-                
+
                 byte[] responseBytes = Encoding.UTF8.GetBytes(errorResponse.ToString());
                 await networkStream.WriteAsync(responseBytes, 0, responseBytes.Length);
                 await networkStream.WriteAsync(errorResponse.Body, 0, errorResponse.Body.Length);
