@@ -12,7 +12,7 @@ namespace SulsApp
         public void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.Add<IUsersService, UsersService>();
-            serviceCollection.Add<ILogger, ConsoleLogger>();
+            //serviceCollection.Add<ILogger, ConsoleLogger>(); //= added in WebHost
             serviceCollection.Add<IProblemsService, ProblemsService>();
         }
 

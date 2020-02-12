@@ -12,10 +12,37 @@
         {
             this.Headers = new List<Header>();
             this.Cookies = new List<Cookie>();
+            this.FormData = new Dictionary<string, string>();
+            this.QueryData = new Dictionary<string, string>();
+            this.SessionData = new Dictionary<string, string>();
 
-            var lines = httpRequestAsString.Split(
-                new string[] { HttpConstants.NewLine },
-                StringSplitOptions.None);
+            this.ReadData(httpRequestAsString);
+        }
+
+        public string Body { get; set; }
+
+        public string Query { get; set; }
+
+        public string Path { get; set; }
+
+        public HttpMethodType Method { get; set; }
+
+        public HttpVersionType Version { get; set; }
+
+        public IList<Cookie> Cookies { get; set; }
+
+        public IList<Header> Headers { get; set; }
+
+        public IDictionary<string, string> FormData { get; set; }
+
+        public IDictionary<string, string> QueryData { get; set; }
+
+        public IDictionary<string, string> SessionData { get; set; }
+
+        private void ReadData(string httpRequestAsString)
+        {
+            var lines = httpRequestAsString.Split(new string[] { HttpConstants.NewLine }, StringSplitOptions.None);
+
             var httpInfoHeader = lines[0];
             var infoHeaderParts = httpInfoHeader.Split(' ');
             if (infoHeaderParts.Length != 3)
@@ -45,6 +72,23 @@
                 _ => HttpVersionType.Http11,
             };
 
+            GetBodyAndHeaders(lines); 
+
+            ParseData(this.FormData, this.Body);
+
+            this.Query = string.Empty;
+            if (this.Path.Contains("?"))
+            {
+                var parts = this.Path.Split(new char[] { '?' }, 2);
+                this.Path = parts[0];
+                this.Query = parts[1];
+            }
+
+            ParseData(this.QueryData, this.Query);
+        }
+
+        private void GetBodyAndHeaders(string[] lines)
+        {
             bool isInHeader = true;
             StringBuilder bodyBuilder = new StringBuilder();
             for (int i = 1; i < lines.Length; i++)
@@ -58,10 +102,7 @@
 
                 if (isInHeader)
                 {
-                    var headerParts = line.Split(
-                        new string[] { ": " },
-                        2,
-                        StringSplitOptions.None);
+                    var headerParts = line.Split(new string[] { ": " }, 2, StringSplitOptions.None);
                     if (headerParts.Length != 2)
                     {
                         throw new HttpServerException($"Invalid header: {line}");
@@ -90,21 +131,7 @@
                 }
             }
 
-            // creator=Niki&tweetName=Hello!
             this.Body = bodyBuilder.ToString().TrimEnd('\r', '\n');
-            this.FormData = new Dictionary<string, string>();
-            ParseData(this.FormData, this.Body);
-
-            this.Query = string.Empty;
-            if (this.Path.Contains("?"))
-            {
-                var parts = this.Path.Split(new char[] { '?' }, 2);
-                this.Path = parts[0];
-                this.Query = parts[1];
-            }
-
-            this.QueryData = new Dictionary<string, string>();
-            ParseData(this.QueryData, this.Query);
         }
 
         private void ParseData(IDictionary<string, string> output, string input)
@@ -113,30 +140,8 @@
             foreach (var dataPart in dataParts)
             {
                 var parameterParts = dataPart.Split(new char[] { '=' }, 2);
-                output.Add(
-                    HttpUtility.UrlDecode(parameterParts[0]),
-                    HttpUtility.UrlDecode(parameterParts[1]));
+                output.Add(HttpUtility.UrlDecode(parameterParts[0]), HttpUtility.UrlDecode(parameterParts[1]));
             }
         }
-
-        public HttpMethodType Method { get; set; }
-
-        public string Path { get; set; }
-
-        public HttpVersionType Version { get; set; }
-
-        public IList<Header> Headers { get; set; }
-
-        public IList<Cookie> Cookies { get; set; }
-
-        public string Body { get; set; }
-
-        public IDictionary<string, string> FormData { get; set; }
-
-        public string Query { get; set; }
-
-        public IDictionary<string, string> QueryData { get; set; }
-
-        public IDictionary<string, string> SessionData { get; set; }
     }
 }

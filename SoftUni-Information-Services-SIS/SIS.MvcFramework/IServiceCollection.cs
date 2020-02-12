@@ -4,9 +4,9 @@ namespace SIS.MvcFramework
 {
     public interface IServiceCollection
     {
-                // <Interface, Class>
+                // <Interface, Class>  
         void Add<TSource, TDestination>()
-            where TDestination : TSource;
+            where TDestination : TSource; /*only successors of the given interface can be TDestination*/
 
         object CreateInstance(Type type);
 

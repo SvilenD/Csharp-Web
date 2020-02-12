@@ -1,5 +1,4 @@
-﻿using SIS.HTTP;
-using SIS.HTTP.Response;
+﻿using SIS.HTTP.Response;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes;
 using SulsApp.Services;
@@ -26,7 +25,7 @@ namespace SulsApp.Controllers
                 Username = usersService.GetUsername(userId) ?? Constants.NotLogged
             };
 
-            return this.View(model); //return View("Index");
+            return this.View(model);
         }
     }
 }

@@ -27,9 +27,6 @@ namespace SIS.HTTP
             this.sessions = new Dictionary<string, IDictionary<string, string>>();
         }
 
-        /// <summary>
-        /// Resets the HTTP Server asynchronously.
-        /// </summary>
         public async Task ResetAsync()
         {
             this.Stop();
@@ -56,11 +53,6 @@ namespace SIS.HTTP
             this.tcpListener.Stop();
         }
 
-        /// <summary>
-        /// Processes the <see cref="TcpClient"/> asynchronously and returns HTTP Response for the browser.
-        /// </summary>
-        /// <param name="tcpClient">TCP Client</param>
-        /// <returns></returns>
         private async Task ProcessClientAsync(TcpClient tcpClient)
         {
             using NetworkStream networkStream = tcpClient.GetStream();
