@@ -22,7 +22,7 @@ namespace DemoApp
             routeTable.Add(new Route(HttpMethodType.Get, "/favicon.ico", FavIcon));
         }
 
-        public void ConfigureServices()
+        public void ConfigureServices(IServiceCollection serviceCollection)
         {
             var db = new ApplicationDbContext();
             db.Database.EnsureCreated();

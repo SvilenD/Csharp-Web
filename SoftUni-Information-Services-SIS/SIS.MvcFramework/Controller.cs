@@ -2,16 +2,18 @@
 using SIS.HTTP.Response;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SIS.MvcFramework
 {
     public abstract class Controller
     {
+        private readonly string id = "UserId";
+
         public HttpRequest Request { get; set; }
 
-        public string User => this.Request.SessionData.ContainsKey("UserId") ? this.Request.SessionData["UserId"] : null;
+        public string User => this.Request.SessionData.ContainsKey(id) ? this.Request.SessionData[id] : null;
+
+        public string Username => this.Request.SessionData.ContainsKey("username") ? this.Request.SessionData["username"] : null;
 
         protected HttpResponse Redirect(string url)
         {
@@ -37,18 +39,6 @@ namespace SIS.MvcFramework
             return this.ViewByName<ErrorViewModel>("Views/Shared/Error.html", new ErrorViewModel { Error = error });
         }
 
-        protected static string Hash(string randomString)
-        {
-            var crypt = new SHA256Managed();
-            var hash = new StringBuilder();
-            byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(randomString));
-            foreach (byte theByte in crypto)
-            {
-                hash.Append(theByte.ToString("x2"));
-            }
-            return hash.ToString();
-        }
-
         private HttpResponse ViewByName<T>(string viewPath, object viewModel)
         {
             IViewEngine viewEngine = new ViewEngine();
@@ -59,6 +49,21 @@ namespace SIS.MvcFramework
             var bodyWithLayout = layout.Replace("@RenderBody()", html);
             bodyWithLayout = viewEngine.GetHtml(bodyWithLayout, viewModel, this.User);
             return new HtmlResponse(bodyWithLayout);
+        }
+
+        protected bool IsUserLoggedIn()
+        {
+            return this.User != null;
+        }
+
+        protected void SignIn(string userId)
+        {
+            this.Request.SessionData[id] = userId;
+        }
+
+        protected void SignOut()
+        {
+            this.Request.SessionData[id] = null;
         }
     }
 }

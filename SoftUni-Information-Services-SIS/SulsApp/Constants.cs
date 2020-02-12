@@ -6,10 +6,20 @@
 
         public const string PasswordsNotIdentical = "Passwords are not matching!";
 
-        public const string InvalidUser = "Invalid User data.";
-
         public const string InvalidLength = "Invalid Length";
 
-        internal static string DublicatedUserEmail = "User with same Username/Email is already registered.";
+        public const string InvalidUsernameLength = "Username should be between 5 and 20 characters.";
+
+        public const string InvalidPasswordLength = "Password should be between 6 and 20 characters.";
+
+        public const string DublicatedEmail = "User with this Email is already registered!";
+
+        public const string DublicatedUsername = "User with this Username is already registered!";
+
+        public const string InvalidEmail = "Invalid Email Address!";
+
+        public const string WelcomeMessage = "Welcome to SULS Platform!";
+
+        public const string NotLogged = "You are Not Logged In.";
     }
 }

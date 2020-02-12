@@ -19,5 +19,7 @@ namespace SulsApp
         [Required]
         [StringLength(20, MinimumLength = 6, ErrorMessage = InvalidLength)]
         public string Password { get; set; }
+
+        public IdentityRole Role { get; set; }
     }
 }

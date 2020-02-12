@@ -4,6 +4,6 @@
     {
         public string Message { get; set; }
 
-        public int Year { get; set; }
+        public string Username { get; set; }
     }
 }
