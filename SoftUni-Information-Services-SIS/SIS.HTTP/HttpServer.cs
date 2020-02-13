@@ -1,17 +1,16 @@
-﻿using System;
-using System.Net;
-using System.Text;
-using System.Linq;
-using System.Net.Sockets;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using SIS.HTTP.Enums;
 using SIS.HTTP.Logging;
 using SIS.HTTP.Response;
-using SIS.HTTP.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SIS.HTTP
 {
-
     public class HttpServer : IHttpServer
     {
         private readonly TcpListener tcpListener;
@@ -56,15 +55,23 @@ namespace SIS.HTTP
         private async Task ProcessClientAsync(TcpClient tcpClient)
         {
             using NetworkStream networkStream = tcpClient.GetStream();
+
+            HttpResponse response = null;
             try
             {
-                byte[] requestBytes = new byte[1000000]; // TODO: Use buffer
-                int bytesRead = await networkStream.ReadAsync(requestBytes, 0, requestBytes.Length);
-                string requestAsString = Encoding.UTF8.GetString(requestBytes, 0, bytesRead);
+                StringBuilder requestInfo = new StringBuilder();
+                while (networkStream.DataAvailable && networkStream.CanRead)
+                {
+                    byte[] requestBytes = new byte[4096];
 
-                var request = new HttpRequest(requestAsString);
+                    int readBytes = await networkStream.ReadAsync(requestBytes, 0, requestBytes.Length);
+                    requestInfo.Append(Encoding.UTF8.GetString(requestBytes, 0, readBytes));
+                }
+                var request = new HttpRequest(requestInfo.ToString());
+
                 string newSessionId = null;
                 var sessionCookie = request.Cookies.FirstOrDefault(x => x.Name == HttpConstants.SessionIdCookieName);
+
                 if (sessionCookie != null && this.sessions.ContainsKey(sessionCookie.Value))
                 {
                     request.SessionData = this.sessions[sessionCookie.Value];
@@ -81,7 +88,6 @@ namespace SIS.HTTP
 
                 var route = this.routeTable.FirstOrDefault(
                     x => x.HttpMethod == request.Method && string.Compare(x.Path, request.Path, true) == 0);
-                HttpResponse response;
                 if (route == null)
                 {
                     response = new HttpResponse(HttpResponseCode.NotFound, new byte[0]);
@@ -100,19 +106,17 @@ namespace SIS.HTTP
                         { HttpOnly = true, MaxAge = 30 * 3600, });
                 }
 
-                byte[] responseBytes = Encoding.UTF8.GetBytes(response.ToString());
-                await networkStream.WriteAsync(responseBytes, 0, responseBytes.Length);
-                await networkStream.WriteAsync(response.Body, 0, response.Body.Length);
             }
             catch (Exception ex)
             {
-                var errorResponse = new HttpResponse(
-                    HttpResponseCode.InternalServerError,
-                    Encoding.UTF8.GetBytes(ex.ToString()));
+                var errorResponse = new HttpResponse(HttpResponseCode.InternalServerError, Encoding.UTF8.GetBytes(ex.ToString()));
                 errorResponse.Headers.Add(new Header("Content-Type", "text/plain"));
-                byte[] responseBytes = Encoding.UTF8.GetBytes(errorResponse.ToString());
+            }
+            finally
+            {
+                byte[] responseBytes = Encoding.UTF8.GetBytes(response.ToString());
                 await networkStream.WriteAsync(responseBytes, 0, responseBytes.Length);
-                await networkStream.WriteAsync(errorResponse.Body, 0, errorResponse.Body.Length);
+                await networkStream.WriteAsync(response.Body, 0, response.Body.Length);
             }
         }
     }

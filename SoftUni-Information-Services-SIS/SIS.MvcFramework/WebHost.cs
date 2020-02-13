@@ -48,10 +48,8 @@ namespace SIS.MvcFramework
             foreach (var controller in controllers)
             {
                 var actions = controller.GetMethods()
-                    .Where(x => !x.IsSpecialName
-                    && !x.IsConstructor
-                    && x.IsPublic
-                    && x.DeclaringType == controller);
+                    .Where(x => !x.IsSpecialName && !x.IsConstructor && x.IsPublic && x.DeclaringType == controller);
+
                 foreach (var action in actions)
                 {
                     string url = "/" + controller.Name.Replace("Controller", string.Empty) + "/" + action.Name;

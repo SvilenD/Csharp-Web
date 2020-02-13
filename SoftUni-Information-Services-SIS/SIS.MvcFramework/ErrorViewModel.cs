@@ -4,5 +4,4 @@
     {
         public string Error { get; set; }
     }
-
 }
