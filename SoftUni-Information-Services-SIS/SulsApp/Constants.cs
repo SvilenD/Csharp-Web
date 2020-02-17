@@ -23,5 +23,11 @@
         public const string LoginPath = "/Users/Login";
 
         public const string ProblemPointsRange = "Points range: [1-100]";
+
+        public const string ProblemNotExists = "Problem not found!";
+
+        public const string InvalidCodeLength = "Please provide code with at least 30 characters.";
+
+        public const int UserPassMaxLengthHashed = 100;
     }
 }

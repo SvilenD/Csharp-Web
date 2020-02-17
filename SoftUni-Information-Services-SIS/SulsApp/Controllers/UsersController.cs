@@ -59,11 +59,6 @@ namespace SulsApp.Controllers
         [HttpPost]
         public HttpResponse Register(RegisterInputModel model)
         {
-            if (model.Password != model.ConfirmPassword)
-            {
-                return this.Error(Constants.PasswordsNotIdentical);
-            }
-
             if (model.Username?.Length < 5 || model.Username?.Length > 20)
             {
                 return this.Error(Constants.InvalidNameLength);
@@ -87,6 +82,11 @@ namespace SulsApp.Controllers
             if (this.usersService.IsEmailUsed(model.Email))
             {
                 return this.Error(Constants.DublicatedEmail);
+            }
+
+            if (model.Password != model.ConfirmPassword)
+            {
+                return this.Error(Constants.PasswordsNotIdentical);
             }
 
             this.usersService.CreateUser(model.Username, model.Email, model.Password);

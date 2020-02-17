@@ -2,20 +2,16 @@
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes;
 using SulsApp.Services;
-using SulsApp.ViewModels.Problems;
-using System.Linq;
 
 namespace SulsApp.Controllers
 {
     public class ProblemsController  : Controller
     {
         private readonly IProblemsService problemsService;
-        private readonly SulsDbContext db;
 
-        public ProblemsController(IProblemsService problemsService, SulsDbContext db)
+        public ProblemsController(IProblemsService problemsService)
         {
             this.problemsService = problemsService;
-            this.db = db;
         }
 
         public HttpResponse Create()
@@ -52,20 +48,7 @@ namespace SulsApp.Controllers
                 return this.Redirect(Constants.LoginPath);
             }
 
-            var viewModel = this.db.Problems.Where(x => x.Id == id)
-                .Select(x => new DetailsViewModel
-                {
-                    Name = x.Name,
-                    Problems = x.Submissions.Select(s =>
-                    new ProblemDetailsSubmissionViewModel
-                    {
-                        CreatedOn = s.CreatedOn,
-                        AchievedResult = s.AchievedResult,
-                        SubmissionId = s.Id,
-                        MaxPoints = x.Points,
-                        Username = s.User.Username,
-                    })
-                }).FirstOrDefault();
+            var viewModel = this.problemsService.GetProblemDetails(id);
 
             return this.View(viewModel);
         }
