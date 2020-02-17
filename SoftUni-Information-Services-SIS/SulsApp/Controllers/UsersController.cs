@@ -3,7 +3,7 @@ using SIS.HTTP.Response;
 using SIS.MvcFramework;
 using SIS.MvcFramework.Attributes;
 using SulsApp.Services;
-using SulsApp.ViewModels;
+using SulsApp.ViewModels.Users;
 using System;
 using System.Net.Mail;
 
@@ -11,7 +11,6 @@ namespace SulsApp.Controllers
 {
     public class UsersController : Controller
     {
-        private const string loginPath = "/Users/Login";
         private readonly IUsersService usersService;
         private readonly ILogger logger;
 
@@ -33,7 +32,7 @@ namespace SulsApp.Controllers
             var userId = this.usersService.GetUserId(username, password);
             if (userId == null)
             {   
-                return this.Redirect(loginPath);
+                return this.Redirect(Constants.LoginPath);
             }
 
             this.SignIn(userId);
@@ -45,7 +44,7 @@ namespace SulsApp.Controllers
         {
             if (!this.IsUserLoggedIn())
             {
-                return this.Redirect(loginPath);
+                return this.Redirect(Constants.LoginPath);
             }
 
             this.SignOut();
@@ -58,42 +57,42 @@ namespace SulsApp.Controllers
         }
 
         [HttpPost]
-        public HttpResponse Register(RegisterInputModel input)
+        public HttpResponse Register(RegisterInputModel model)
         {
-            if (input.Password != input.ConfirmPassword)
+            if (model.Password != model.ConfirmPassword)
             {
                 return this.Error(Constants.PasswordsNotIdentical);
             }
 
-            if (input.Username?.Length < 5 || input.Username?.Length > 20)
+            if (model.Username?.Length < 5 || model.Username?.Length > 20)
             {
-                return this.Error(Constants.InvalidUsernameLength);
+                return this.Error(Constants.InvalidNameLength);
             }
 
-            if (input.Password?.Length < 6 || input.Password?.Length > 20)
+            if (model.Password?.Length < 6 || model.Password?.Length > 20)
             {
                 return this.Error(Constants.InvalidPasswordLength);
             }
 
-            if (!IsValidEmail(input.Email))
+            if (!IsValidEmail(model.Email))
             {
                 return this.Error(Constants.InvalidEmail);
             }
 
-            if (this.usersService.IsUsernameUsed(input.Username))
+            if (this.usersService.IsUsernameUsed(model.Username))
             {
                 return this.Error(Constants.DublicatedUsername);
             }
 
-            if (this.usersService.IsEmailUsed(input.Email))
+            if (this.usersService.IsEmailUsed(model.Email))
             {
                 return this.Error(Constants.DublicatedEmail);
             }
 
-            this.usersService.CreateUser(input.Username, input.Email, input.Password);
-            this.logger.Log("New user: " + input.Username);
+            this.usersService.CreateUser(model.Username, model.Email, model.Password);
+            this.logger.Log("New user: " + model.Username);
 
-            var userId = this.usersService.GetUserId(input.Username, input.Password);
+            var userId = this.usersService.GetUserId(model.Username, model.Password);
             this.SignIn(userId);
 
             return this.Redirect("/");

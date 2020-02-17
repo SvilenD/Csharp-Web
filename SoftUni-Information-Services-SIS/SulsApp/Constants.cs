@@ -8,7 +8,7 @@
 
         public const string InvalidLength = "Invalid Length";
 
-        public const string InvalidUsernameLength = "Username should be between 5 and 20 characters.";
+        public const string InvalidNameLength = "Name should be between 5 and 20 characters.";
 
         public const string InvalidPasswordLength = "Password should be between 6 and 20 characters.";
 
@@ -18,8 +18,10 @@
 
         public const string InvalidEmail = "Invalid Email Address!";
 
-        public const string WelcomeMessage = "Welcome to SULS Platform!";
-
         public const string NotLogged = "You are Not Logged In.";
+
+        public const string LoginPath = "/Users/Login";
+
+        public const string ProblemPointsRange = "Points range: [1-100]";
     }
 }

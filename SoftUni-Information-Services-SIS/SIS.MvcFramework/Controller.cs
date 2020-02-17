@@ -8,13 +8,10 @@ namespace SIS.MvcFramework
     public abstract class Controller
     {
         private readonly string id = "UserId";
-        private readonly string username = "username";
 
         public HttpRequest Request { get; set; }
 
         public string User => this.Request.SessionData.ContainsKey(id) ? this.Request.SessionData[id] : null;
-
-        public string Username => this.Request.SessionData.ContainsKey(username) ? this.Request.SessionData[username] : null;
 
         protected HttpResponse Redirect(string url)
         {
@@ -24,7 +21,7 @@ namespace SIS.MvcFramework
         protected HttpResponse View<T>(T viewModel = null, [CallerMemberName]string viewName = null)
             where T : class
         {
-            var typeName = this.GetType().Name/*.Replace("Controller", string.Empty)*/;
+            var typeName = this.GetType().Name /*.Replace("Controller", string.Empty)*/;
             var controllerName = typeName.Substring(0, typeName.Length - 10);
             var viewPath = "Views/" + controllerName + "/" + viewName + ".html";
             return this.ViewByName<T>(viewPath, viewModel);
