@@ -1,4 +1,4 @@
-﻿namespace SulsApp
+﻿namespace SIS.MvcFramework
 {
     public enum IdentityRole
     {

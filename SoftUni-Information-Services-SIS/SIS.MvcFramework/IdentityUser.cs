@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SulsApp
+namespace SIS.MvcFramework
 {
     public class IdentityUser<T>
     {

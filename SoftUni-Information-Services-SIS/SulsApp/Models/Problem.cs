@@ -18,7 +18,7 @@ namespace SulsApp.Models
         [Required]
         public string Name { get; set; }
 
-        [Range(5,300)]
+        [Range(5, 300)]
         public int Points { get; set; }
 
         public virtual ICollection<Submission> Submissions { get; set; }
