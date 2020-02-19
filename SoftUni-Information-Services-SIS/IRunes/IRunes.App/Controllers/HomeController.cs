@@ -35,5 +35,12 @@ namespace IRunes.App.Controllers
 
             return this.View();
         }
+
+
+        [HttpGet("/Home/Index")]
+        public HttpResponse IndexFullPage()
+        {
+            return this.Index();
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using IRunes.Models;
-using System;
 using System.Collections.Generic;
 
 namespace IRunes.Services
@@ -8,6 +7,8 @@ namespace IRunes.Services
     {
         void Create(string name, string cover);
 
-        IEnumerable<T> GetAll<T>(Func<Album, T> selectFunc);
+        IEnumerable<Album> GetAll();
+
+        Album GetDetails(string id);
     }
 }

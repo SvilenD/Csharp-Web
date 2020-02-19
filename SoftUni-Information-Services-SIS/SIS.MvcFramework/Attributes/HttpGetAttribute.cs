@@ -1,7 +1,9 @@
 ﻿using SIS.HTTP.Enums;
+using System;
 
 namespace SIS.MvcFramework.Attributes
 {
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class HttpGetAttribute : HttpMethodAttribute
     {
         public HttpGetAttribute()
@@ -9,7 +11,7 @@ namespace SIS.MvcFramework.Attributes
         }
 
         public HttpGetAttribute(string url)
-            :base(url)
+            : base(url)
         {
         }
 

@@ -57,7 +57,7 @@ namespace IRunes.App.Controllers
         {
             if (model.Username?.Length < 4 || model.Username?.Length > 10)
             {
-                return this.Error(Constants.InvalidNameLength);
+                return this.Error(Constants.InvalidUsernameLength);
             }
 
             if (model.Password?.Length < 6 || model.Password?.Length > 20)

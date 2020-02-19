@@ -3,6 +3,7 @@ using System;
 
 namespace SIS.MvcFramework.Attributes
 {
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public abstract class HttpMethodAttribute : Attribute
     {
         protected HttpMethodAttribute()

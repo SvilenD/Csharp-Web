@@ -23,7 +23,6 @@ namespace IRunes.Models
         [Required]
         public string Cover { get; set; }
 
-        [Required]
         public decimal Price => this.Tracks.Sum(t => t.Price) * 0.87m;
 
         public virtual ICollection<Track> Tracks { get; set; } 
