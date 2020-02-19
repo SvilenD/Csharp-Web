@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SIS.MvcFramework;
+using System;
 using System.Collections.Generic;
 
 namespace SulsApp.Models
