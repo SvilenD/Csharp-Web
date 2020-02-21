@@ -13,6 +13,6 @@ namespace IRunes.App.ViewModels.Albums
 
         public decimal Price { get; set; }
 
-        public IEnumerable<TrackInfoViewModel> Tracks { get; set; }
+        public List<TrackInfoViewModel> Tracks { get; set; }
     }
 }

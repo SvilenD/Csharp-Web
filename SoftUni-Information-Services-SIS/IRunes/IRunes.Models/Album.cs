@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace IRunes.Models
 {
@@ -13,7 +12,6 @@ namespace IRunes.Models
             this.Tracks = new HashSet<Track>();
         }
 
-        [Key]
         public string Id { get; set; }
 
         [MaxLength(20)]
@@ -23,8 +21,8 @@ namespace IRunes.Models
         [Required]
         public string Cover { get; set; }
 
-        public decimal Price => this.Tracks.Sum(t => t.Price) * 0.87m;
+        public decimal Price { get; set; }
 
-        public virtual ICollection<Track> Tracks { get; set; } 
+        public virtual ICollection<Track> Tracks { get; set; }
     }
 }

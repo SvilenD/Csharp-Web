@@ -1,4 +1,5 @@
 ﻿using IRunes.App.ViewModels.Albums;
+using IRunes.App.ViewModels.Tracks;
 using IRunes.Services;
 using SIS.HTTP.Response;
 using SIS.MvcFramework;
@@ -9,21 +10,30 @@ namespace IRunes.App.Controllers
 {
     public class AlbumsController : Controller
     {
-        private readonly IAlbumService albumService;
+        private readonly IAlbumsService albumService;
 
-        public AlbumsController(IAlbumService albumService)
+        public AlbumsController(IAlbumsService albumService)
         {
             this.albumService = albumService;
         }
 
         public HttpResponse Create()
         {
+            //if (!this.IsUserLoggedIn())
+            //{
+            //    return this.Redirect(Constants.LoginPath);
+            //}
+
             return this.View();
         }
 
         [HttpPost]
         public HttpResponse Create(AlbumCreateInputModel model)
         {
+            //if (!this.IsUserLoggedIn())
+            //{
+            //    return this.Redirect(Constants.LoginPath);
+            //}
             if (model?.Name.Length < 4 || model?.Name.Length > 20)
             {
                 return this.Error(Constants.InvalidNameLength);
@@ -40,10 +50,10 @@ namespace IRunes.App.Controllers
 
         public HttpResponse All()
         {
-            if (!this.IsUserLoggedIn())
-            {
-                return this.Redirect(Constants.LoginPath);
-            }
+            //if (!this.IsUserLoggedIn())
+            //{
+            //    return this.Redirect(Constants.LoginPath);
+            //}
 
             var albums = this.albumService.GetAll();
             var albumViewModels = new AllAlbumsViewModel
@@ -62,7 +72,19 @@ namespace IRunes.App.Controllers
         public HttpResponse Details(string id)
         {
             var album = this.albumService.GetDetails(id);
-            return this.View(album);
+            var albumView = new AlbumDetailsViewModel
+            {
+                Id = id,
+                Name = album.Name,
+                Cover = album.Cover,
+                Price = album.Price,
+                Tracks = album.Tracks.Select(t => new TrackInfoViewModel
+                {
+                    Id = t.Id,
+                    Name = t.Name
+                }).ToList()
+            };
+            return this.View(albumView);
         }
     }
 }

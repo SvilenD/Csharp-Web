@@ -21,5 +21,7 @@
         public const string NotLogged = "You are Not Logged In.";
 
         public const string LoginPath = "/Users/Login";
+        public const string InvalidLink = "Enter a valid link!";
+        public const string NegativePrice = "Price should be a positive number.";
     }
 }
